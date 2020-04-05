@@ -1,0 +1,22 @@
+{
+  "name": "yavt",
+  "version": "1.0.0",
+  "description": "Yet another versioning tool - Git versioning, simple and configurable",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "tschmiedlechner",
+  "license": "MIT",
+  "dependencies": {
+    "azure-pipelines-task-lib": "^2.9.3",
+    "glob": "^7.1.6",
+    "xml2js": "^0.4.23"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.1",
+    "@types/node": "^13.11.0",
+    "@types/q": "^1.5.2",
+    "@types/xml2js": "^0.4.5"
+  }
+}
