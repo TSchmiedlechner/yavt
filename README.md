@@ -27,13 +27,15 @@ To get started, install the extension from the link above, and create a `version
 
 ```json
 {
-    "version": "1.0.0",  // postfixes are also supported, e.g. 1.0.0-rc1
+    "version": "1.0.0",
     "releaseBranches": [
         "^refs/heads/master$", 
-        "^refs\/tags\/v\d+\.\d.\d+$" 
+        "^refs\/tags\/v\\d+\\.\\d.\\d+$" 
     ]
 }
 ```
+
+Semantic versioning, including postfixes (like `-rc1`, etc.) are supported in the version property.
 
 Then, pull the build step into your pipeline - either via the UI editor, or with the following YAML step:
 
