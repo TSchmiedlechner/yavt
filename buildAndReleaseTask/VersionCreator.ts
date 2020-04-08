@@ -2,10 +2,21 @@ import tl = require('azure-pipelines-task-lib/task');
 import { IVersionConfig } from "./IVersionConfig";
 
 export class VersionCreator {
+
+    private addCiLabel: boolean;
+
+    constructor(addCiLabel: boolean) {
+        this.addCiLabel = addCiLabel;
+    }
+
     public getVersion(versionConfig: IVersionConfig): string {
 
         const branch = tl.getVariable("Build.SourceBranch");
-        if (versionConfig.releaseBranches && versionConfig.releaseBranches.some(x => branch !== undefined && new RegExp(x).test(branch))) {
+        if (branch == undefined) {
+            throw new Error("'Build.SourceBranch' is not set.");
+        }
+
+        if (versionConfig.releaseBranches && versionConfig.releaseBranches.some(x => new RegExp(x).test(branch))) {
             return versionConfig.version;
         }
         else {
@@ -16,7 +27,12 @@ export class VersionCreator {
                 separator = ".";
             }
             else {
-                separator = "-";
+                if (this.addCiLabel && this.isPrBuild(branch)) {
+                    separator = "-ci.";
+                }
+                else {
+                    separator = "-";
+                }
             }
 
             return `${versionConfig.version}${separator}${this.getShortYear()}${this.getDayOfYear()}.${buildId}`;
@@ -57,5 +73,11 @@ export class VersionCreator {
     private getShortYear(): string {
 
         return new Date().getFullYear().toString().substr(-2);
+    }
+
+    private isPrBuild(branch: string): boolean {
+
+        const pattern = "refs/pull/\\d*/merge";
+        return new RegExp(pattern).test(branch);
     }
 }

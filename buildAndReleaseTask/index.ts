@@ -11,6 +11,7 @@ async function run() {
         const pathToVersionJson: string | undefined = tl.getPathInput('pathToVersionJson', true);
         const updateNuspecFiles: boolean = tl.getBoolInput('updateNuspecFiles', true);
         const updateBuildNumber: boolean = tl.getBoolInput('updateBuildNumber', true);
+        const addCiLabel: boolean = tl.getBoolInput('addCiLabel', true);
 
         if (pathToVersionJson === undefined) {
             tl.setResult(tl.TaskResult.Failed, "The input 'pathToVersionJson' is required.");
@@ -20,7 +21,7 @@ async function run() {
         const versionContent = await fs.promises.readFile(pathToVersionJson, "utf8");
         const versionConfig: IVersionConfig = JSON.parse(versionContent);
 
-        const versionCreator = new VersionCreator();
+        const versionCreator = new VersionCreator(addCiLabel);
         const buildPropsVersionManager = new BuildPropsVersionManager(versionCreator);
 
         if (updateBuildNumber) {
