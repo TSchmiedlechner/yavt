@@ -9,7 +9,7 @@
             "id": "Microsoft.VisualStudio.Services"
         }
     ],    
-    "description": "Yet another versioning tool - Git versioning, simple and configurable",
+    "description": "Yet another versioning tool - Git versioning, made simple.",
     "categories": [
         "Azure Pipelines"
     ],
