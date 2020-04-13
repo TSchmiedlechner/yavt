@@ -1,6 +1,7 @@
 *.js
 *.vsix
 Directory.build.props
+.taskkey
 
 # Logs
 logs
