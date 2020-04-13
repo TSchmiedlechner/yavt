@@ -1,6 +1,6 @@
 {
   "name": "yavt",
-  "version": "1.0.0",
+  "version": "1.2.2",
   "description": "Yet another versioning tool - Git versioning, simple and configurable",
   "main": "index.js",
   "scripts": {

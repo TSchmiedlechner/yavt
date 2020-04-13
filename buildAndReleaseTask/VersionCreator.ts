@@ -4,14 +4,17 @@ import { IVersionConfig } from "./IVersionConfig";
 export class VersionCreator {
 
     private addCiLabel: boolean;
+    private semverVersion: string;
 
-    constructor(addCiLabel: boolean) {
+    constructor(addCiLabel: boolean, semverVersion: string) {
         this.addCiLabel = addCiLabel;
+        this.semverVersion = semverVersion;
     }
 
     public getVersion(versionConfig: IVersionConfig): string {
 
         const branch = tl.getVariable("Build.SourceBranch");
+        const labelSeparator = this.getLabelSeparator();
         if (branch == undefined) {
             throw new Error("'Build.SourceBranch' is not set.");
         }
@@ -24,7 +27,7 @@ export class VersionCreator {
             let separator: string;
 
             if (this.versionHasPostfix(versionConfig.version)) {
-                separator = ".";
+                separator = labelSeparator;
             }
             else {
                 if (this.addCiLabel && this.isPrBuild(branch)) {
@@ -35,7 +38,7 @@ export class VersionCreator {
                 }
             }
 
-            return `${versionConfig.version}${separator}${this.getShortYear()}${this.getDayOfYear()}.${buildId}`;
+            return `${versionConfig.version}${separator}${this.getShortYear()}${this.getDayOfYear()}${labelSeparator}${buildId}`;
         }
     }
 
@@ -79,5 +82,15 @@ export class VersionCreator {
 
         const pattern = "refs/pull/\\d*/merge";
         return new RegExp(pattern).test(branch);
+    }
+
+    private getLabelSeparator(): string {
+
+        if (this.semverVersion === "v1") {
+            return "-";
+        }
+        else {
+            return ".";
+        }
     }
 }

@@ -1,5 +1,6 @@
 *.js
 *.vsix
+Directory.build.props
 
 # Logs
 logs

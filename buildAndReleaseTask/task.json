@@ -9,8 +9,8 @@
     "author": "tschmiedlechner",
     "version": {
         "Major": 1,
-        "Minor": 1,
-        "Patch": 3
+        "Minor": 2,
+        "Patch": 2
     },
     "instanceNameFormat": "Set versions",
     "inputs": [
@@ -35,7 +35,7 @@
             "type": "boolean",
             "label": "Set build number",
             "defaultValue": true,
-            "required": true,
+            "required": false,
             "helpMarkDown": "If set to _true_, the build number is set to the computed version"
         },
         {
@@ -45,6 +45,18 @@
             "defaultValue": true,
             "required": true,
             "helpMarkDown": "If set to _true_, the postfix label 'ci' will be set for PR builds if no other label is set. For example, creating a PR build with the specified version `1.0.0` will result in `1.0.0-ci.20045.123`. When the label is already set, e.g. to `1.0.0-rc1`, it will be respected and results in `1.0.0-rc1.20045.123`"
+        },
+        {
+            "name": "semverVersion",
+            "type": "pickList",
+            "label": "SemVer version",
+            "defaultValue": "v2",
+            "required": false,
+            "options": {
+                "v1": "v1",
+                "v2": "v2"
+            },
+            "helpMarkDown": "If v1 is selected, labels are separated by a `-` instead of a `.` - e.g. `1.0.0-rc1-20123-42` instead of `1.0.0-rc1.20123.42`"
         }        
     ],
     "execution": {

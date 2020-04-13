@@ -9,6 +9,7 @@ async function run() {
     try {
 
         const pathToVersionJson: string | undefined = tl.getPathInput('pathToVersionJson', true);
+        const semverVersion: string | undefined = tl.getInput('semverVersion', true);
         const updateNuspecFiles: boolean = tl.getBoolInput('updateNuspecFiles', true);
         const updateBuildNumber: boolean = tl.getBoolInput('updateBuildNumber', true);
         const addCiLabel: boolean = tl.getBoolInput('addCiLabel', true);
@@ -17,11 +18,16 @@ async function run() {
             tl.setResult(tl.TaskResult.Failed, "The input 'pathToVersionJson' is required.");
             return;
         }
+        
+        if (semverVersion === undefined) {
+            tl.setResult(tl.TaskResult.Failed, "The input 'semverVersion' is required.");
+            return;
+        }
 
         const versionContent = await fs.promises.readFile(pathToVersionJson, "utf8");
         const versionConfig: IVersionConfig = JSON.parse(versionContent);
 
-        const versionCreator = new VersionCreator(addCiLabel);
+        const versionCreator = new VersionCreator(addCiLabel, semverVersion);
         const buildPropsVersionManager = new BuildPropsVersionManager(versionCreator);
 
         if (updateBuildNumber) {
