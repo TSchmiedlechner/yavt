@@ -1,6 +1,6 @@
 import fs = require('fs');
 import xml2js = require('xml2js');
-import glob = require('glob');
+import glob = require('glob-promise');
 import { IVersionConfig } from './IVersionConfig';
 import { VersionCreator } from './VersionCreator';
 
@@ -12,19 +12,17 @@ export class NuspecVersionManager {
         this.versionCreator = versionCreator;
     }
 
-    public async updateVersionsAsync(versionConfig: IVersionConfig): Promise<void> {
+    public async updateVersionsAsync(directory: string, versionConfig: IVersionConfig): Promise<void> {
 
         let version = this.versionCreator.getVersion(versionConfig);
+        let files = await glob(`${directory}/**/{*.nuspec,.nuspec}`);
+        if (!files) {
+            return;
+        }
 
-        glob("**/{*.nuspec,.nuspec}", {}, async (er, files) => {
-            if (!files) {
-                return;
-            }
-
-            for (const file of files) {
-                await this.updateNuspecFileAsync(file, version)
-            }
-        });
+        for (const file of files) {
+            await this.updateNuspecFileAsync(file, version)
+        }
     }
 
     private async updateNuspecFileAsync(path: string, version: string) {
