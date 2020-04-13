@@ -18,7 +18,7 @@
             "name": "mode",
             "type": "pickList",
             "label": "Single or multiple version.json files",
-            "defaultValue": "Multi",
+            "defaultValue": "Single",
             "required": false,
             "options": {
                 "Multi": "Automatically scan for (multiple) version.json files",
@@ -56,7 +56,7 @@
             "type": "boolean",
             "label": "Add CI label to PR builds if no postfix is set",
             "defaultValue": true,
-            "required": true,
+            "required": false,
             "helpMarkDown": "If set to _true_, the postfix label 'ci' will be set for PR builds if no other label is set. For example, creating a PR build with the specified version `1.0.0` will result in `1.0.0-ci.20045.123`. When the label is already set, e.g. to `1.0.0-rc1`, it will be respected and results in `1.0.0-rc1.20045.123`"
         },
         {
