@@ -21,10 +21,10 @@
             "defaultValue": "Single",
             "required": false,
             "options": {
-                "Multi": "Automatically scan for (multiple) version.json files",
-                "Single": "Use a single version.json for all projects"
+                "Single": "Use a single version.json for all projects",
+                "Multi": "Automatically scan for (multiple) version.jso files"
             },
-            "helpMarkDown": "When set to `multiple`, a Directory.build.props file is created on the same level as each detected version.json."
+            "helpMarkDown": "_Single_ will use one `version.json` file for all found projects. When set to _Multi_, a Directory.build.props file is created on the same level as each detected `version.json`. "
         },
         {
             "name": "pathToVersionJson",
@@ -69,7 +69,7 @@
                 "v1": "v1",
                 "v2": "v2"
             },
-            "helpMarkDown": "If v1 is selected, labels are separated by a `-` instead of a `.` - e.g. `1.0.0-rc1-20123-42` instead of `1.0.0-rc1.20123.42`"
+            "helpMarkDown": "If v1 is selected, labels are separated by a `-` instead of a `.` - e.g. `1.0.0-rc1-20123-42` instead of `1.0.0-rc1.20123.42`."
         }        
     ],
     "execution": {

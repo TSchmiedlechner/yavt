@@ -35,6 +35,8 @@ To get started, install the extension from the link above, and create a `version
 }
 ```
 
+If you set the parameter `mode` to `Multi`, you can also specify multiple `version.json`'s that will be used for their respective folders and subfolders.
+
 Semantic versioning, including postfixes (like `-rc1`, etc.) are supported in the version property.
 
 Then, pull the build step into your pipeline - either via the UI editor, or with the following YAML step:
@@ -43,14 +45,18 @@ Then, pull the build step into your pipeline - either via the UI editor, or with
 steps:
 - task: yavt@1
   inputs:
-    pathToVersionJson: 'version.json'
+    mode: 'Single'                      // Or 'Multi'
+    pathToVersionJson: 'version.json'   // Ignored when set to mode 'Multi'
     updateNuspecFiles: true
-    updateBuildNumber: true
+    updateBuildNumber: true             // Ignored when set to mode 'Multi'
     addCiLabel: true
+    semverVersion: 'v2'
 ```
 
 ## Parameters
-- **`pathToVersionJson`**: The path to the `version.json`.
+- **`mode`**: _Single_ will use one `version.json` file for all found projects. When set to _Multi_, a Directory.build.props file is created on the same level as each detected `version.json`. 
+- **`pathToVersionJson`**: The path to the `version.json`. Ignored when set to mode 'Multi'.
 - **`updateNuspecFiles`**: If set to _true_, the version will also be inserted/updated in `.nuspec` files.
 - **`updateBuildNumber`**: If set to _true_, the build number in Azure DevOps is set to the computed version.
-- **`addCiLabel`**: If set to _true_, the postfix label `ci` will be set for PR builds if no other label is specified. For example, creating a PR build with the specified version `1.0.0` will result in `1.0.0-ci.20045.123`. When the label is already set in `version.json`, e.g. to `1.0.0-rc1`, it will be respected and the resulting version will be  `1.0.0-rc1.20045.123`
+- **`addCiLabel`**: If set to _true_, the postfix label `ci` will be set for PR builds if no other label is specified. For example, creating a PR build with the specified version `1.0.0` will result in `1.0.0-ci.20045.123`. When the label is already set in `version.json`, e.g. to `1.0.0-rc1`, it will be respected and the resulting version will be  `1.0.0-rc1.20045.123`. Ignored when set to mode 'Multi'.
+- **`semverVersion`**: If v1 is selected, labels are separated by a `-` instead of a `.` - e.g. `1.0.0-rc1-20123-42` instead of `1.0.0-rc1.20123.42`.
