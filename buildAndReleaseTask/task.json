@@ -9,7 +9,7 @@
     "author": "tschmiedlechner",
     "version": {
         "Major": 1,
-        "Minor": 3,
+        "Minor": 4,
         "Patch": 0
     },
     "instanceNameFormat": "Set versions",
@@ -58,6 +58,14 @@
             "defaultValue": true,
             "required": false,
             "helpMarkDown": "If set to _true_, the postfix label 'ci' will be set for PR builds if no other label is set. For example, creating a PR build with the specified version `1.0.0` will result in `1.0.0-ci.20045.123`. When the label is already set, e.g. to `1.0.0-rc1`, it will be respected and results in `1.0.0-rc1.20045.123`"
+        },
+        {
+            "name": "includeParentProps",
+            "type": "boolean",
+            "label": "Include parent Directory.Build.props (if one exists)",
+            "defaultValue": true,
+            "required": false,
+            "helpMarkDown": "If set to _true_, the task will scan for parent Directory.Build.props and add them via an _<Import>_ statement"
         },
         {
             "name": "semverVersion",

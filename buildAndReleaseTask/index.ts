@@ -15,6 +15,7 @@ async function run() {
         const semverVersion: string | undefined = tl.getInput('semverVersion', true);
         const updateNuspecFiles: boolean = tl.getBoolInput('updateNuspecFiles', true);
         const updateBuildNumber: boolean = tl.getBoolInput('updateBuildNumber', true);
+        const includeParentProps: boolean = tl.getBoolInput('includeParentProps', true);
         const addCiLabel: boolean = tl.getBoolInput('addCiLabel', true);
 
         if (pathToVersionJson === undefined) {
@@ -31,7 +32,7 @@ async function run() {
         }
 
         if (mode == "Single") {
-            await updateVersion("./", pathToVersionJson, semverVersion, updateNuspecFiles, updateBuildNumber, addCiLabel);
+            await updateVersion("./", pathToVersionJson, semverVersion, updateNuspecFiles, updateBuildNumber, addCiLabel, includeParentProps);
         }
         else {
             let files = await glob("**/version.json");
@@ -41,7 +42,7 @@ async function run() {
 
             for (const file of files) {
                 const workDir = path.dirname(file);
-                await updateVersion(workDir, file, semverVersion, updateNuspecFiles, updateBuildNumber, addCiLabel);
+                await updateVersion(workDir, file, semverVersion, updateNuspecFiles, updateBuildNumber, addCiLabel, includeParentProps);
             }
         }
     }
@@ -50,7 +51,7 @@ async function run() {
     }
 }
 
-async function updateVersion(workDir: string, pathToVersionJson: string, semverVersion: string, updateNuspecFiles: boolean, updateBuildNumber: boolean, addCiLabel: boolean) {
+async function updateVersion(workDir: string, pathToVersionJson: string, semverVersion: string, updateNuspecFiles: boolean, updateBuildNumber: boolean, addCiLabel: boolean, includeParentProps: boolean) {
     const versionContent = await fs.promises.readFile(pathToVersionJson, "utf8");
     const versionConfig: IVersionConfig = JSON.parse(versionContent);
 
@@ -60,8 +61,8 @@ async function updateVersion(workDir: string, pathToVersionJson: string, semverV
     if (updateBuildNumber) {
         tl.updateBuildNumber(versionCreator.getVersion(versionConfig));
     }
-
-    await buildPropsVersionManager.updateVersionAsync(path.join(workDir, "Directory.build.props"), versionConfig);
+    
+    await buildPropsVersionManager.updateVersionAsync(path.join(workDir, "Directory.build.props"), versionConfig, includeParentProps);
 
     if (updateNuspecFiles) {
         const nuspecVersionManager = new NuspecVersionManager(versionCreator);

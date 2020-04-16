@@ -1,4 +1,5 @@
 import fs = require('fs');
+import path = require('path');
 import xml2js = require('xml2js');
 import { IVersionConfig } from './IVersionConfig';
 import { VersionCreator } from './VersionCreator';
@@ -11,7 +12,7 @@ export class BuildPropsVersionManager {
         this.versionCreator = versionCreator;
     }
 
-    public async updateVersionAsync(pathToPropsFile: string, versionConfig: IVersionConfig): Promise<void> {
+    public async updateVersionAsync(pathToPropsFile: string, versionConfig: IVersionConfig, includeParentProps: boolean): Promise<void> {
 
         let updatedXml: any;
 
@@ -30,8 +31,42 @@ export class BuildPropsVersionManager {
             updatedXml = this.createBuildProps(versionConfig);
         }
 
+        if (includeParentProps && this.parentPropsExist(pathToPropsFile)) {
+            updatedXml = this.addParentImport(updatedXml);
+        }
+
         const xmlBuilder = new xml2js.Builder({ headless: true });
         await fs.promises.writeFile(pathToPropsFile, xmlBuilder.buildObject(updatedXml));
+    }
+
+    private parentPropsExist(pathToPropsFile: string) {
+
+        let directory = path.join(path.dirname(pathToPropsFile), "..");
+        while (this.isInWorkingDirectory(directory)) {
+            if (fs.existsSync(path.join(directory, "Directory.Build.props"))) {
+                return true;
+            }
+            directory = path.join(directory, "..");
+        }
+        return false;
+    }
+
+    private isInWorkingDirectory(directory: string) {
+        const relative = path.relative("./", directory);
+        return (relative && !relative.startsWith('..') && !path.isAbsolute(relative)) || (path.resolve(directory) === path.resolve("./"));
+    }
+
+    private addParentImport(xml: any): any {
+
+        const node = { $: { Project: "$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" } }
+        if (xml.Project.Import && xml.Project.Import.length) {
+            xml.Project.Import.push(node);
+        }
+        else {
+            xml.Project.Import = node;
+        }
+
+        return xml;
     }
 
     private updateBuildProps(xml: any, versionConfig: IVersionConfig): any {
@@ -47,7 +82,7 @@ export class BuildPropsVersionManager {
                 propertyGroupWithVersion[0].Version = version;
             }
             else {
-                var propertyGroup = { Version: version };
+                const propertyGroup = { Version: version };
                 xml.Project.PropertyGroup.push(propertyGroup);
             }
 
@@ -56,7 +91,7 @@ export class BuildPropsVersionManager {
                 propertyGroupWithFileVersion[0].FileVersion = fileVersion;
             }
             else {
-                var propertyGroupFile = { FileVersion: fileVersion };
+                const propertyGroupFile = { FileVersion: fileVersion };
                 xml.Project.PropertyGroup.push(propertyGroupFile);
             }
         }
