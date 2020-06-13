@@ -31,7 +31,7 @@ export class VersionCreator {
             }
             else {
                 if (this.addCiLabel && this.isPrBuild(branch)) {
-                    separator = "-ci.";
+                    separator = `-ci${labelSeparator}`;
                 }
                 else {
                     separator = "-";
