@@ -32,7 +32,7 @@ async function run() {
         }
 
         if (mode == "Single") {
-            await updateVersion("./", pathToVersionJson, semverVersion, updateNuspecFiles, updateBuildNumber, addCiLabel, includeParentProps);
+            await updateVersion("./", pathToVersionJson, semverVersion, updateNuspecFiles, updateBuildNumber, addCiLabel, includeParentProps, false);
         }
         else {
             let files = await glob("**/version.json");
@@ -42,7 +42,7 @@ async function run() {
 
             for (const file of files) {
                 const workDir = path.dirname(file);
-                await updateVersion(workDir, file, semverVersion, updateNuspecFiles, updateBuildNumber, addCiLabel, includeParentProps);
+                await updateVersion(workDir, file, semverVersion, updateNuspecFiles, updateBuildNumber, addCiLabel, includeParentProps, true);
             }
         }
     }
@@ -51,7 +51,7 @@ async function run() {
     }
 }
 
-async function updateVersion(workDir: string, pathToVersionJson: string, semverVersion: string, updateNuspecFiles: boolean, updateBuildNumber: boolean, addCiLabel: boolean, includeParentProps: boolean) {
+async function updateVersion(workDir: string, pathToVersionJson: string, semverVersion: string, updateNuspecFiles: boolean, updateBuildNumber: boolean, addCiLabel: boolean, includeParentProps: boolean, isMultiMode: boolean) {
     const versionContent = await fs.promises.readFile(pathToVersionJson, "utf8");
     const versionConfig: IVersionConfig = JSON.parse(versionContent);
 
@@ -66,7 +66,7 @@ async function updateVersion(workDir: string, pathToVersionJson: string, semverV
 
     if (updateNuspecFiles) {
         const nuspecVersionManager = new NuspecVersionManager(versionCreator);
-        await nuspecVersionManager.updateVersionsAsync(workDir, versionConfig);
+        await nuspecVersionManager.updateVersionsAsync(workDir, versionConfig, isMultiMode);
     }
 }
 

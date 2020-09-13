@@ -13,7 +13,7 @@ export class NuspecVersionManager {
         this.versionCreator = versionCreator;
     }
 
-    public async updateVersionsAsync(directory: string, versionConfig: IVersionConfig): Promise<void> {
+    public async updateVersionsAsync(directory: string, versionConfig: IVersionConfig, isMultiMode: boolean): Promise<void> {
 
         let version = this.versionCreator.getVersion(versionConfig);
         let files = await glob(`${directory}/**/{*.nuspec,.nuspec}`);
@@ -22,7 +22,7 @@ export class NuspecVersionManager {
         }
 
         for (const file of files) {
-            if (this.morePreciseVersionExists(directory, file)) {
+            if (isMultiMode && this.morePreciseVersionExists(directory, file)) {
                 continue;
             }
 
