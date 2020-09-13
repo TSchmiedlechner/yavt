@@ -27,6 +27,7 @@ export class NuspecVersionManager {
             }
 
             await this.updateNuspecFileAsync(file, version)
+            console.log(`Set .nuspec version in '${file}' to '${version}'.`);
         }
     }
 
