@@ -37,6 +37,7 @@ export class BuildPropsVersionManager {
 
         const xmlBuilder = new xml2js.Builder({ headless: true });
         await fs.promises.writeFile(pathToPropsFile, xmlBuilder.buildObject(updatedXml));
+        console.log(`Set Directory.Build.props version in '${pathToPropsFile}' to '${this.versionCreator.getVersion(versionConfig)}'.`);
     }
 
     private parentPropsExist(pathToPropsFile: string) {
