@@ -30,7 +30,7 @@ export class VersionCreator {
                 separator = labelSeparator;
             }
             else {
-                if (this.addCiLabel && this.isPrBuild(branch)) {
+                if (this.addCiLabel) {
                     separator = `-ci${labelSeparator}`;
                 }
                 else {
@@ -76,12 +76,6 @@ export class VersionCreator {
     private getShortYear(): string {
 
         return new Date().getFullYear().toString().substr(-2);
-    }
-
-    private isPrBuild(branch: string): boolean {
-
-        const pattern = "refs/pull/\\d*/merge";
-        return new RegExp(pattern).test(branch);
     }
 
     private getLabelSeparator(): string {
