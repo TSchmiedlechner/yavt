@@ -9,8 +9,8 @@
     "author": "tschmiedlechner",
     "version": {
         "Major": 1,
-        "Minor": 4,
-        "Patch": 3
+        "Minor": 5,
+        "Patch": 1
     },
     "instanceNameFormat": "Set versions",
     "inputs": [
