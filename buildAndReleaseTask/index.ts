@@ -40,9 +40,15 @@ async function run() {
                 return;
             }
 
+            let releaseVersion;
+
             for (const file of files) {
                 const workDir = path.dirname(file);
-                await updateVersion(workDir, file, semverVersion, updateNuspecFiles, updateBuildNumber, addCiLabel, includeParentProps, true);
+                releaseVersion ??= await updateVersion(workDir, file, semverVersion, updateNuspecFiles, updateBuildNumber, addCiLabel, includeParentProps, true);
+            }
+
+            if (updateBuildNumber && releaseVersion !== undefined) {
+                tl.updateBuildNumber(releaseVersion);
             }
         }
     }
@@ -51,23 +57,26 @@ async function run() {
     }
 }
 
-async function updateVersion(workDir: string, pathToVersionJson: string, semverVersion: string, updateNuspecFiles: boolean, updateBuildNumber: boolean, addCiLabel: boolean, includeParentProps: boolean, isMultiMode: boolean) {
+async function updateVersion(workDir: string, pathToVersionJson: string, semverVersion: string, updateNuspecFiles: boolean, updateBuildNumber: boolean, addCiLabel: boolean, includeParentProps: boolean, isMultiMode: boolean): Promise<string | undefined> {
     const versionContent = await fs.promises.readFile(pathToVersionJson, "utf8");
     const versionConfig: IVersionConfig = JSON.parse(versionContent);
 
     const versionCreator = new VersionCreator(addCiLabel, semverVersion);
     const buildPropsVersionManager = new BuildPropsVersionManager(versionCreator);
-    
+
     if (updateBuildNumber) {
         tl.updateBuildNumber(versionCreator.getVersion(versionConfig));
     }
-    
+
     await buildPropsVersionManager.updateVersionAsync(path.join(workDir, "Directory.build.props"), versionConfig, includeParentProps);
 
     if (updateNuspecFiles) {
         const nuspecVersionManager = new NuspecVersionManager(versionCreator);
         await nuspecVersionManager.updateVersionsAsync(workDir, versionConfig, isMultiMode);
     }
+
+    let releaseVersion = versionCreator.getReleaseVersion(versionConfig);
+    return releaseVersion;
 }
 
 run();

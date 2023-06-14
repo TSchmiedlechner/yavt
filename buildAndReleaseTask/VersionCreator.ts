@@ -11,6 +11,18 @@ export class VersionCreator {
         this.semverVersion = semverVersion;
     }
 
+    public getReleaseVersion(versionConfig: IVersionConfig): string | undefined {
+        const branch = tl.getVariable("Build.SourceBranch");
+        if (this.isReleaseVersion(versionConfig, branch)) {
+            return this.getVersion(versionConfig);
+        }
+        return undefined;
+    }
+
+    public isReleaseVersion(versionConfig: IVersionConfig, branch: string): boolean {
+        return versionConfig.releaseBranches && versionConfig.releaseBranches.some(x => new RegExp(x).test(branch));
+    }
+
     public getVersion(versionConfig: IVersionConfig): string {
 
         const branch = tl.getVariable("Build.SourceBranch");
@@ -19,7 +31,7 @@ export class VersionCreator {
             throw new Error("'Build.SourceBranch' is not set.");
         }
 
-        if (versionConfig.releaseBranches && versionConfig.releaseBranches.some(x => new RegExp(x).test(branch))) {
+        if (this.isReleaseVersion(versionConfig, branch)) {
             return versionConfig.version;
         }
         else {
