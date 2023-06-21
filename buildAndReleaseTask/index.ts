@@ -17,6 +17,7 @@ async function run() {
         const updateBuildNumber: boolean = tl.getBoolInput('updateBuildNumber', true);
         const includeParentProps: boolean = tl.getBoolInput('includeParentProps', true);
         const addCiLabel: boolean = tl.getBoolInput('addCiLabel', true);
+        const failOnTagVersionMismatch: boolean = tl.getBoolInput('failOnTagVersionMismatch', true);
 
         if (pathToVersionJson === undefined) {
             tl.setResult(tl.TaskResult.Failed, "The input 'pathToVersionJson' is required.");
@@ -32,7 +33,7 @@ async function run() {
         }
 
         if (mode == "Single") {
-            await updateVersion("./", pathToVersionJson, semverVersion, updateNuspecFiles, updateBuildNumber, addCiLabel, includeParentProps, false);
+            await updateVersion("./", pathToVersionJson, semverVersion, updateNuspecFiles, updateBuildNumber, addCiLabel, includeParentProps, false, failOnTagVersionMismatch);
         }
         else {
             let files = await glob("**/version.json");
@@ -40,9 +41,15 @@ async function run() {
                 return;
             }
 
+            let releaseVersion;
+
             for (const file of files) {
                 const workDir = path.dirname(file);
-                await updateVersion(workDir, file, semverVersion, updateNuspecFiles, updateBuildNumber, addCiLabel, includeParentProps, true);
+                releaseVersion ??= await updateVersion(workDir, file, semverVersion, updateNuspecFiles, updateBuildNumber, addCiLabel, includeParentProps, true, failOnTagVersionMismatch);
+            }
+
+            if (updateBuildNumber && releaseVersion !== undefined) {
+                tl.updateBuildNumber(releaseVersion);
             }
         }
     }
@@ -51,23 +58,36 @@ async function run() {
     }
 }
 
-async function updateVersion(workDir: string, pathToVersionJson: string, semverVersion: string, updateNuspecFiles: boolean, updateBuildNumber: boolean, addCiLabel: boolean, includeParentProps: boolean, isMultiMode: boolean) {
+async function updateVersion(workDir: string, pathToVersionJson: string, semverVersion: string, updateNuspecFiles: boolean, updateBuildNumber: boolean, addCiLabel: boolean, includeParentProps: boolean, isMultiMode: boolean, failOnTagVersionMismatch: boolean): Promise<string | undefined> {
     const versionContent = await fs.promises.readFile(pathToVersionJson, "utf8");
     const versionConfig: IVersionConfig = JSON.parse(versionContent);
 
     const versionCreator = new VersionCreator(addCiLabel, semverVersion);
     const buildPropsVersionManager = new BuildPropsVersionManager(versionCreator);
-    
+
     if (updateBuildNumber) {
         tl.updateBuildNumber(versionCreator.getVersion(versionConfig));
     }
-    
+
     await buildPropsVersionManager.updateVersionAsync(path.join(workDir, "Directory.build.props"), versionConfig, includeParentProps);
 
     if (updateNuspecFiles) {
         const nuspecVersionManager = new NuspecVersionManager(versionCreator);
         await nuspecVersionManager.updateVersionsAsync(workDir, versionConfig, isMultiMode);
     }
+
+    let releaseVersion = versionCreator.getReleaseVersion(versionConfig);
+
+    if (releaseVersion !== undefined && failOnTagVersionMismatch) {
+        const branch = tl.getVariable("Build.SourceBranch");
+        if (versionCreator.isReleaseVersion(versionConfig, branch)) {
+            if (branch.startsWith("refs/tags/") && !branch.endsWith(releaseVersion as string)) {
+                throw new Error(`The release version ${releaseVersion} does not match the tag ${branch}.`);
+            }
+        }
+    }
+
+    return releaseVersion;
 }
 
 run();
