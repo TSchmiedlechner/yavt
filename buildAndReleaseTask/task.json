@@ -9,8 +9,8 @@
     "author": "tschmiedlechner",
     "version": {
         "Major": 1,
-        "Minor": 5,
-        "Patch": 1
+        "Minor": 6,
+        "Patch": 0
     },
     "instanceNameFormat": "Set versions",
     "inputs": [
@@ -67,6 +67,14 @@
             "required": false,
             "helpMarkDown": "If set to _true_, the task will scan for parent Directory.Build.props and add them via an _<Import>_ statement"
         },
+        {
+            "name": "failOnTagVersionMismatch",
+            "type": "boolean",
+            "label": "Fail when release version and tag don't match",
+            "defaultValue": true,
+            "required": false,
+            "helpMarkDown": "Fail when a release version is created, but the tag and the version don't match"
+        },        
         {
             "name": "semverVersion",
             "type": "pickList",
