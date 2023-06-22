@@ -13,7 +13,7 @@ export class VersionCreator {
 
     public getReleaseVersion(versionConfig: IVersionConfig): string | undefined {
         const branch = tl.getVariable("Build.SourceBranch");
-        if (this.isReleaseVersion(versionConfig, branch)) {
+        if (this.isReleaseVersion(versionConfig, branch!)) {
             return this.getVersion(versionConfig);
         }
         return undefined;

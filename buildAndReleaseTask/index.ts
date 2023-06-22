@@ -80,8 +80,8 @@ async function updateVersion(workDir: string, pathToVersionJson: string, semverV
 
     if (releaseVersion !== undefined && failOnTagVersionMismatch) {
         const branch = tl.getVariable("Build.SourceBranch");
-        if (versionCreator.isReleaseVersion(versionConfig, branch)) {
-            if (branch.startsWith("refs/tags/") && !branch.endsWith(releaseVersion as string)) {
+        if (versionCreator.isReleaseVersion(versionConfig, branch!)) {
+            if (branch!.startsWith("refs/tags/") && !branch!.endsWith(releaseVersion as string)) {
                 throw new Error(`The release version ${releaseVersion} does not match the tag ${branch}.`);
             }
         }
