@@ -45,7 +45,8 @@ async function run() {
 
             for (const file of files) {
                 const workDir = path.dirname(file);
-                releaseVersion ??= await updateVersion(workDir, file, semverVersion, updateNuspecFiles, updateBuildNumber, addCiLabel, includeParentProps, true, failOnTagVersionMismatch);
+                const innerReleasVersion = await updateVersion(workDir, file, semverVersion, updateNuspecFiles, updateBuildNumber, addCiLabel, includeParentProps, true, failOnTagVersionMismatch);
+                releaseVersion ??= innerReleasVersion;
             }
 
             if (updateBuildNumber && releaseVersion !== undefined) {

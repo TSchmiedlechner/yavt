@@ -10,7 +10,7 @@
     "version": {
         "Major": 1,
         "Minor": 6,
-        "Patch": 0
+        "Patch": 1
     },
     "instanceNameFormat": "Set versions",
     "inputs": [
@@ -74,7 +74,7 @@
             "defaultValue": true,
             "required": false,
             "helpMarkDown": "Fail when a release version is created, but the tag and the version don't match"
-        },        
+        },
         {
             "name": "semverVersion",
             "type": "pickList",
@@ -86,7 +86,7 @@
                 "v2": "v2"
             },
             "helpMarkDown": "If v1 is selected, labels are separated by a `-` instead of a `.` - e.g. `1.0.0-rc1-20123-42` instead of `1.0.0-rc1.20123.42`."
-        }        
+        }
     ],
     "execution": {
         "Node10": {
