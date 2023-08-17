@@ -4,11 +4,13 @@ import { IVersionConfig } from "./IVersionConfig";
 export class VersionCreator {
 
     private addCiLabel: boolean;
+    private splitFileVersion: boolean;
     private semverVersion: string;
 
-    constructor(addCiLabel: boolean, semverVersion: string) {
+    constructor(addCiLabel: boolean, semverVersion: string, splitFileVersion: boolean) {
         this.addCiLabel = addCiLabel;
         this.semverVersion = semverVersion;
+        this.splitFileVersion = splitFileVersion;
     }
 
     public getReleaseVersion(versionConfig: IVersionConfig): string | undefined {
@@ -55,7 +57,6 @@ export class VersionCreator {
     }
 
     public getFileVersion(versionConfig: IVersionConfig): string {
-
         const buildId = tl.getVariable("Build.BuildId");
         let version: string;
 
@@ -66,7 +67,17 @@ export class VersionCreator {
             version = versionConfig.version;
         }
 
-        return `${version}.${buildId}`
+        if (this.splitFileVersion) {
+            const versionParts = version.split(".");
+            version = `${versionParts[0]}.${versionParts[1]}`;
+
+            const buildIdString = buildId.toString();
+            const buildIdSplit = `${buildIdString.substring(0, buildIdString.length - 4)}.${buildIdString.substring(buildIdString.length - 4)}`;
+
+            return `${version}.${buildIdSplit}`;
+        } else {
+            return `${version}.${buildId}`;
+        }
     }
 
     private versionHasPostfix(version: string): boolean {

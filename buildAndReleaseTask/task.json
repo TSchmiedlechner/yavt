@@ -9,8 +9,8 @@
     "author": "tschmiedlechner",
     "version": {
         "Major": 1,
-        "Minor": 6,
-        "Patch": 1
+        "Minor": 7,
+        "Patch": 0
     },
     "instanceNameFormat": "Set versions",
     "inputs": [
@@ -74,6 +74,14 @@
             "defaultValue": true,
             "required": false,
             "helpMarkDown": "Fail when a release version is created, but the tag and the version don't match"
+        },
+        {
+            "name": "splitFileVersion",
+            "type": "boolean",
+            "label": "Split up the build number for the minor and patch parts of the file version",
+            "defaultValue": true,
+            "required": false,
+            "helpMarkDown": "Can be used to fix build error CS7035"
         },
         {
             "name": "semverVersion",
