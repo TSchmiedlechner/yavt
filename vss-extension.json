@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "yavt",
     "name": "YAVT - Yet another versioning tool",
-    "version": "1.6.1",
+    "version": "1.7.0",
     "publisher": "tschmiedlechner",
     "targets": [
         {

@@ -80,6 +80,20 @@ export class VersionCreator {
         }
     }
 
+    public getAssemblyVersion(versionConfig: IVersionConfig): string {
+        let version: string;
+
+        if (versionConfig.version.includes("-")) {
+            version = versionConfig.version.substring(0, versionConfig.version.indexOf('-'));
+        }
+        else {
+            version = versionConfig.version;
+        }
+
+        return `${version}.0`;
+    }
+
+
     private versionHasPostfix(version: string): boolean {
 
         return version.includes("-");

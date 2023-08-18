@@ -76,6 +76,7 @@ export class BuildPropsVersionManager {
 
         const version = this.versionCreator.getVersion(versionConfig);
         const fileVersion = this.versionCreator.getFileVersion(versionConfig);
+        const assemblyVersion = this.versionCreator.getAssemblyVersion(versionConfig);
 
         if (xml.Project.PropertyGroup) {
             const propertyGroupWithVersion = xml.Project.PropertyGroup.filter((x: any) => x.Version);
@@ -95,13 +96,22 @@ export class BuildPropsVersionManager {
                 const propertyGroupFile = { FileVersion: fileVersion };
                 xml.Project.PropertyGroup.push(propertyGroupFile);
             }
+
+            const propertyGroupWithAssemblyVersion = xml.Project.PropertyGroup.filter((x: any) => x.AssemblyVersion);
+            if (propertyGroupWithAssemblyVersion && propertyGroupWithAssemblyVersion.length) {
+                propertyGroupWithAssemblyVersion[0].AssemblyVersion = assemblyVersion;
+            }
+            else {
+                const propertyGroupAssembly = { AssemblyVersion: assemblyVersion };
+                xml.Project.PropertyGroup.push(propertyGroupAssembly);
+            }
         }
         else {
             if (typeof xml.Project === 'string' || xml.Project instanceof String) {
-                xml.Project = { PropertyGroup: { Version: version, FileVersion: fileVersion } };
+                xml.Project = { PropertyGroup: { Version: version, FileVersion: fileVersion, AssemblyVersion: assemblyVersion } };
             }
             else {
-                xml.Project.PropertyGroup = { Version: version, FileVersion: fileVersion };
+                xml.Project.PropertyGroup = { Version: version, FileVersion: fileVersion, AssemblyVersion: assemblyVersion };
             }
         }
 
@@ -112,7 +122,8 @@ export class BuildPropsVersionManager {
 
         const version = this.versionCreator.getVersion(versionConfig);
         const fileVersion = this.versionCreator.getFileVersion(versionConfig);
+        const assemblyVersion = this.versionCreator.getAssemblyVersion(versionConfig);
 
-        return { Project: { PropertyGroup: { Version: version, FileVersion: fileVersion } } };
+        return { Project: { PropertyGroup: { Version: version, FileVersion: fileVersion, AssemblyVersion: assemblyVersion } } };
     }
 }
