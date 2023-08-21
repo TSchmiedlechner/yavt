@@ -59,7 +59,10 @@ export class VersionCreator {
     public getFileVersion(versionConfig: IVersionConfig): string {
         const buildId = tl.getVariable("Build.BuildId");
         let version: string;
-
+        if (buildId == undefined) {
+            throw new Error("'Build.BuildId' is not set.");
+        }
+        
         if (versionConfig.version.includes("-")) {
             version = versionConfig.version.substring(0, versionConfig.version.indexOf('-'));
         }
