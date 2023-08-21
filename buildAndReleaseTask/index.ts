@@ -18,6 +18,7 @@ async function run() {
         const includeParentProps: boolean = tl.getBoolInput('includeParentProps', true);
         const addCiLabel: boolean = tl.getBoolInput('addCiLabel', true);
         const failOnTagVersionMismatch: boolean = tl.getBoolInput('failOnTagVersionMismatch', true);
+        const splitFileVersion: boolean = tl.getBoolInput('splitFileVersion', true);
 
         if (pathToVersionJson === undefined) {
             tl.setResult(tl.TaskResult.Failed, "The input 'pathToVersionJson' is required.");
@@ -33,7 +34,7 @@ async function run() {
         }
 
         if (mode == "Single") {
-            await updateVersion("./", pathToVersionJson, semverVersion, updateNuspecFiles, updateBuildNumber, addCiLabel, includeParentProps, false, failOnTagVersionMismatch);
+            await updateVersion("./", pathToVersionJson, semverVersion, updateNuspecFiles, updateBuildNumber, addCiLabel, includeParentProps, false, failOnTagVersionMismatch, splitFileVersion);
         }
         else {
             let files = await glob("**/version.json");
@@ -45,7 +46,7 @@ async function run() {
 
             for (const file of files) {
                 const workDir = path.dirname(file);
-                const innerReleasVersion = await updateVersion(workDir, file, semverVersion, updateNuspecFiles, updateBuildNumber, addCiLabel, includeParentProps, true, failOnTagVersionMismatch);
+                const innerReleasVersion = await updateVersion(workDir, file, semverVersion, updateNuspecFiles, updateBuildNumber, addCiLabel, includeParentProps, true, failOnTagVersionMismatch, splitFileVersion);
                 releaseVersion ??= innerReleasVersion;
             }
 
@@ -59,11 +60,11 @@ async function run() {
     }
 }
 
-async function updateVersion(workDir: string, pathToVersionJson: string, semverVersion: string, updateNuspecFiles: boolean, updateBuildNumber: boolean, addCiLabel: boolean, includeParentProps: boolean, isMultiMode: boolean, failOnTagVersionMismatch: boolean): Promise<string | undefined> {
+async function updateVersion(workDir: string, pathToVersionJson: string, semverVersion: string, updateNuspecFiles: boolean, updateBuildNumber: boolean, addCiLabel: boolean, includeParentProps: boolean, isMultiMode: boolean, failOnTagVersionMismatch: boolean, splitFileVersion: boolean): Promise<string | undefined> {
     const versionContent = await fs.promises.readFile(pathToVersionJson, "utf8");
     const versionConfig: IVersionConfig = JSON.parse(versionContent);
 
-    const versionCreator = new VersionCreator(addCiLabel, semverVersion);
+    const versionCreator = new VersionCreator(addCiLabel, semverVersion, splitFileVersion);
     const buildPropsVersionManager = new BuildPropsVersionManager(versionCreator);
 
     if (updateBuildNumber) {

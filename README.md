@@ -51,7 +51,8 @@ steps:
     updateBuildNumber: true
     addCiLabel: true
     failOnTagVersionMismatch: true
-    semverVersion: 'v2'    
+    splitFileVersion: true
+    semverVersion: 'v2'
 ```
 
 ## Parameters
@@ -61,4 +62,5 @@ steps:
 - **`updateBuildNumber`**: If set to _true_, the build number in Azure DevOps is set to the computed version.
 - **`addCiLabel`**: If set to _true_, the postfix label `ci` will be set for PR builds if no other label is specified. For example, creating a PR build with the specified version `1.0.0` will result in `1.0.0-ci.20045.123`. When the label is already set in `version.json`, e.g. to `1.0.0-rc1`, it will be respected and the resulting version will be  `1.0.0-rc1.20045.123`.
 - **`failOnTagVersionMismatch`**: If set to _true_, fail when a release version is created, but the tag and the version don't match.
+- **`splitFileVersion`**: If set to true the build number will be split up into two parts and used for the minor and patch parts of the file version. This mitigates error CS7035 on build numbers higher than 65534.
 - **`semverVersion`**: If v1 is selected, labels are separated by a `-` instead of a `.` - e.g. `1.0.0-rc1-20123-42` instead of `1.0.0-rc1.20123.42`.
